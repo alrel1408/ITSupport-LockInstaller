@@ -1,0 +1,67 @@
+╔══════════════════════════════════════════════════════════════╗
+║                     MULAI DARI SINI!                         ║
+╚══════════════════════════════════════════════════════════════╝
+
+🚀 CARA CEPAT MEMULAI:
+
+   1️⃣  Double-click file: JALANKAN_SEBAGAI_ADMIN.bat
+   
+   2️⃣  Klik "Yes" pada jendela UAC
+   
+   3️⃣  GUI akan muncul - Pilih tombol sesuai kebutuhan!
+
+
+═══════════════════════════════════════════════════════════════
+
+📖 DOKUMENTASI LENGKAP:
+   
+   • README.md            → Panduan detail semua fitur
+   • PANDUAN_CEPAT.txt    → Quick reference guide  
+   • SCREENSHOT_GUI.txt   → Tampilan visual tool
+
+
+═══════════════════════════════════════════════════════════════
+
+⚠️  PENTING:
+
+   ✓ Tool ini HARUS dijalankan sebagai Administrator
+   ✓ Simpan password yang Anda buat dengan AMAN
+   ✓ Buat minimal 2 akun admin untuk backup
+
+
+═══════════════════════════════════════════════════════════════
+
+💡 REKOMENDASI ALUR KERJA:
+
+   Step 1: Klik tombol BIRU → Buat admin baru
+   Step 2: Klik tombol HIJAU → Aktifkan kunci instalasi  
+   Step 3: Klik tombol PUTIH → Cek status
+   
+   ✅ Selesai! User biasa sekarang butuh password Admin 
+      untuk install aplikasi.
+
+
+═══════════════════════════════════════════════════════════════
+
+🆘 BUTUH BANTUAN?
+
+   • Error atau masalah? Baca bagian Troubleshooting 
+     di README.md
+   
+   • Lupa password? Boot ke Safe Mode, login dengan
+     admin lain, lalu reset password
+
+
+═══════════════════════════════════════════════════════════════
+
+🔙 CARA MEMBATALKAN:
+
+   Jalankan tool → Klik tombol MERAH (Nonaktifkan Kunci)
+   
+   Semua kembali seperti semula!
+
+
+═══════════════════════════════════════════════════════════════
+            Selamat menggunakan! Good luck! 🎯
+═══════════════════════════════════════════════════════════════
+
