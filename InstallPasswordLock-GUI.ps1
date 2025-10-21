@@ -1,6 +1,6 @@
 # ============================================
-# Install Password Lock Tool - GUI Version
-# Windows Forms Interface
+# Install Password Lock Tool - GUI Version (FIXED)
+# Windows Forms Interface - Emoji Removed for Compatibility
 # ============================================
 
 Add-Type -AssemblyName System.Windows.Forms
@@ -84,55 +84,95 @@ function Disable-InstallLock {
 function New-AdminAccount {
     $form = New-Object System.Windows.Forms.Form
     $form.Text = "Buat Akun Administrator Baru"
-    $form.Size = New-Object System.Drawing.Size(400, 250)
+    $form.Size = New-Object System.Drawing.Size(450, 400)
     $form.StartPosition = "CenterScreen"
     $form.FormBorderStyle = 'FixedDialog'
     $form.MaximizeBox = $false
+    $form.BackColor = [System.Drawing.Color]::FromArgb(240, 244, 248)
+    
+    # Header Panel
+    $headerPanel = New-Object System.Windows.Forms.Panel
+    $headerPanel.Location = New-Object System.Drawing.Point(0, 0)
+    $headerPanel.Size = New-Object System.Drawing.Size(450, 60)
+    $headerPanel.BackColor = [System.Drawing.Color]::FromArgb(52, 152, 219)
+    $form.Controls.Add($headerPanel)
+    
+    $headerLabel = New-Object System.Windows.Forms.Label
+    $headerLabel.Location = New-Object System.Drawing.Point(15, 15)
+    $headerLabel.Size = New-Object System.Drawing.Size(410, 35)
+    $headerLabel.Text = "Buat Akun Administrator Baru"
+    $headerLabel.Font = New-Object System.Drawing.Font("Segoe UI", 13, [System.Drawing.FontStyle]::Bold)
+    $headerLabel.ForeColor = [System.Drawing.Color]::White
+    $headerPanel.Controls.Add($headerLabel)
     
     # Username Label & TextBox
     $labelUser = New-Object System.Windows.Forms.Label
-    $labelUser.Location = New-Object System.Drawing.Point(20, 20)
-    $labelUser.Size = New-Object System.Drawing.Size(350, 20)
+    $labelUser.Location = New-Object System.Drawing.Point(30, 80)
+    $labelUser.Size = New-Object System.Drawing.Size(380, 22)
     $labelUser.Text = "Nama User Baru:"
+    $labelUser.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $labelUser.ForeColor = [System.Drawing.Color]::FromArgb(52, 73, 94)
     $form.Controls.Add($labelUser)
     
     $textUsername = New-Object System.Windows.Forms.TextBox
-    $textUsername.Location = New-Object System.Drawing.Point(20, 45)
-    $textUsername.Size = New-Object System.Drawing.Size(340, 25)
+    $textUsername.Location = New-Object System.Drawing.Point(30, 105)
+    $textUsername.Size = New-Object System.Drawing.Size(375, 30)
+    $textUsername.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+    $textUsername.BorderStyle = 'FixedSingle'
     $form.Controls.Add($textUsername)
     
     # Password Label & TextBox
     $labelPass = New-Object System.Windows.Forms.Label
-    $labelPass.Location = New-Object System.Drawing.Point(20, 80)
-    $labelPass.Size = New-Object System.Drawing.Size(350, 20)
+    $labelPass.Location = New-Object System.Drawing.Point(30, 145)
+    $labelPass.Size = New-Object System.Drawing.Size(380, 22)
     $labelPass.Text = "Password:"
+    $labelPass.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $labelPass.ForeColor = [System.Drawing.Color]::FromArgb(52, 73, 94)
     $form.Controls.Add($labelPass)
     
     $textPassword = New-Object System.Windows.Forms.TextBox
-    $textPassword.Location = New-Object System.Drawing.Point(20, 105)
-    $textPassword.Size = New-Object System.Drawing.Size(340, 25)
+    $textPassword.Location = New-Object System.Drawing.Point(30, 170)
+    $textPassword.Size = New-Object System.Drawing.Size(375, 30)
     $textPassword.PasswordChar = '*'
+    $textPassword.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+    $textPassword.BorderStyle = 'FixedSingle'
     $form.Controls.Add($textPassword)
     
     # Confirm Password Label & TextBox
     $labelConfirm = New-Object System.Windows.Forms.Label
-    $labelConfirm.Location = New-Object System.Drawing.Point(20, 140)
-    $labelConfirm.Size = New-Object System.Drawing.Size(350, 20)
+    $labelConfirm.Location = New-Object System.Drawing.Point(30, 210)
+    $labelConfirm.Size = New-Object System.Drawing.Size(380, 22)
     $labelConfirm.Text = "Konfirmasi Password:"
+    $labelConfirm.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $labelConfirm.ForeColor = [System.Drawing.Color]::FromArgb(52, 73, 94)
     $form.Controls.Add($labelConfirm)
     
     $textConfirm = New-Object System.Windows.Forms.TextBox
-    $textConfirm.Location = New-Object System.Drawing.Point(20, 165)
-    $textConfirm.Size = New-Object System.Drawing.Size(340, 25)
+    $textConfirm.Location = New-Object System.Drawing.Point(30, 235)
+    $textConfirm.Size = New-Object System.Drawing.Size(375, 30)
     $textConfirm.PasswordChar = '*'
+    $textConfirm.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+    $textConfirm.BorderStyle = 'FixedSingle'
     $form.Controls.Add($textConfirm)
+    
+    # Buttons Panel
+    $buttonPanel = New-Object System.Windows.Forms.Panel
+    $buttonPanel.Location = New-Object System.Drawing.Point(30, 290)
+    $buttonPanel.Size = New-Object System.Drawing.Size(375, 45)
+    $form.Controls.Add($buttonPanel)
     
     # Button Buat
     $btnCreate = New-Object System.Windows.Forms.Button
-    $btnCreate.Location = New-Object System.Drawing.Point(180, 200)
-    $btnCreate.Size = New-Object System.Drawing.Size(90, 30)
-    $btnCreate.Text = "Buat"
-    $btnCreate.BackColor = [System.Drawing.Color]::LightGreen
+    $btnCreate.Location = New-Object System.Drawing.Point(0, 0)
+    $btnCreate.Size = New-Object System.Drawing.Size(180, 40)
+    $btnCreate.Text = "[OK] BUAT"
+    $btnCreate.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $btnCreate.ForeColor = [System.Drawing.Color]::White
+    $btnCreate.BackColor = [System.Drawing.Color]::FromArgb(46, 204, 113)
+    $btnCreate.FlatStyle = 'Flat'
+    $btnCreate.FlatAppearance.BorderSize = 0
+    $btnCreate.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(39, 174, 96)
+    $btnCreate.Cursor = [System.Windows.Forms.Cursors]::Hand
     $btnCreate.Add_Click({
         $username = $textUsername.Text.Trim()
         $password = $textPassword.Text
@@ -172,15 +212,22 @@ function New-AdminAccount {
             [System.Windows.Forms.MessageBox]::Show("Error membuat user: $_", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
         }
     })
-    $form.Controls.Add($btnCreate)
+    $buttonPanel.Controls.Add($btnCreate)
     
     # Button Batal
     $btnCancel = New-Object System.Windows.Forms.Button
-    $btnCancel.Location = New-Object System.Drawing.Point(280, 200)
-    $btnCancel.Size = New-Object System.Drawing.Size(80, 30)
-    $btnCancel.Text = "Batal"
+    $btnCancel.Location = New-Object System.Drawing.Point(195, 0)
+    $btnCancel.Size = New-Object System.Drawing.Size(180, 40)
+    $btnCancel.Text = "[X] BATAL"
+    $btnCancel.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $btnCancel.ForeColor = [System.Drawing.Color]::White
+    $btnCancel.BackColor = [System.Drawing.Color]::FromArgb(231, 76, 60)
+    $btnCancel.FlatStyle = 'Flat'
+    $btnCancel.FlatAppearance.BorderSize = 0
+    $btnCancel.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(192, 57, 43)
+    $btnCancel.Cursor = [System.Windows.Forms.Cursors]::Hand
     $btnCancel.Add_Click({ $form.Close() })
-    $form.Controls.Add($btnCancel)
+    $buttonPanel.Controls.Add($btnCancel)
     
     $form.ShowDialog()
 }
@@ -188,55 +235,90 @@ function New-AdminAccount {
 function Enable-BuiltInAdmin {
     $form = New-Object System.Windows.Forms.Form
     $form.Text = "Aktifkan Administrator Built-in"
-    $form.Size = New-Object System.Drawing.Size(400, 220)
+    $form.Size = New-Object System.Drawing.Size(450, 320)
     $form.StartPosition = "CenterScreen"
     $form.FormBorderStyle = 'FixedDialog'
     $form.MaximizeBox = $false
+    $form.BackColor = [System.Drawing.Color]::FromArgb(240, 244, 248)
+    
+    # Header Panel
+    $headerPanel = New-Object System.Windows.Forms.Panel
+    $headerPanel.Location = New-Object System.Drawing.Point(0, 0)
+    $headerPanel.Size = New-Object System.Drawing.Size(450, 60)
+    $headerPanel.BackColor = [System.Drawing.Color]::FromArgb(41, 128, 185)
+    $form.Controls.Add($headerPanel)
     
     $labelInfo = New-Object System.Windows.Forms.Label
-    $labelInfo.Location = New-Object System.Drawing.Point(20, 20)
-    $labelInfo.Size = New-Object System.Drawing.Size(350, 40)
-    $labelInfo.Text = "Aktifkan akun 'Administrator' built-in Windows dan set password baru:"
-    $form.Controls.Add($labelInfo)
+    $labelInfo.Location = New-Object System.Drawing.Point(15, 10)
+    $labelInfo.Size = New-Object System.Drawing.Size(410, 45)
+    $labelInfo.Text = "Aktifkan akun 'Administrator' built-in Windows`ndan set password baru"
+    $labelInfo.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
+    $labelInfo.ForeColor = [System.Drawing.Color]::White
+    $headerPanel.Controls.Add($labelInfo)
     
     # Password Label & TextBox
     $labelPass = New-Object System.Windows.Forms.Label
-    $labelPass.Location = New-Object System.Drawing.Point(20, 70)
-    $labelPass.Size = New-Object System.Drawing.Size(350, 20)
+    $labelPass.Location = New-Object System.Drawing.Point(30, 80)
+    $labelPass.Size = New-Object System.Drawing.Size(380, 22)
     $labelPass.Text = "Password Baru:"
+    $labelPass.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $labelPass.ForeColor = [System.Drawing.Color]::FromArgb(52, 73, 94)
     $form.Controls.Add($labelPass)
     
     $textPassword = New-Object System.Windows.Forms.TextBox
-    $textPassword.Location = New-Object System.Drawing.Point(20, 95)
-    $textPassword.Size = New-Object System.Drawing.Size(340, 25)
+    $textPassword.Location = New-Object System.Drawing.Point(30, 105)
+    $textPassword.Size = New-Object System.Drawing.Size(375, 30)
     $textPassword.PasswordChar = '*'
+    $textPassword.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+    $textPassword.BorderStyle = 'FixedSingle'
     $form.Controls.Add($textPassword)
     
     # Confirm Password
     $labelConfirm = New-Object System.Windows.Forms.Label
-    $labelConfirm.Location = New-Object System.Drawing.Point(20, 130)
-    $labelConfirm.Size = New-Object System.Drawing.Size(350, 20)
+    $labelConfirm.Location = New-Object System.Drawing.Point(30, 145)
+    $labelConfirm.Size = New-Object System.Drawing.Size(380, 22)
     $labelConfirm.Text = "Konfirmasi Password:"
+    $labelConfirm.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $labelConfirm.ForeColor = [System.Drawing.Color]::FromArgb(52, 73, 94)
     $form.Controls.Add($labelConfirm)
     
     $textConfirm = New-Object System.Windows.Forms.TextBox
-    $textConfirm.Location = New-Object System.Drawing.Point(20, 155)
-    $textConfirm.Size = New-Object System.Drawing.Size(340, 25)
+    $textConfirm.Location = New-Object System.Drawing.Point(30, 170)
+    $textConfirm.Size = New-Object System.Drawing.Size(375, 30)
     $textConfirm.PasswordChar = '*'
+    $textConfirm.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+    $textConfirm.BorderStyle = 'FixedSingle'
     $form.Controls.Add($textConfirm)
     
-    # Button
+    # Buttons Panel
+    $buttonPanel = New-Object System.Windows.Forms.Panel
+    $buttonPanel.Location = New-Object System.Drawing.Point(30, 220)
+    $buttonPanel.Size = New-Object System.Drawing.Size(375, 45)
+    $form.Controls.Add($buttonPanel)
+    
+    # Button Aktifkan
     $btnActivate = New-Object System.Windows.Forms.Button
-    $btnActivate.Location = New-Object System.Drawing.Point(180, 190)
-    $btnActivate.Size = New-Object System.Drawing.Size(90, 25)
-    $btnActivate.Text = "Aktifkan"
-    $btnActivate.BackColor = [System.Drawing.Color]::LightGreen
+    $btnActivate.Location = New-Object System.Drawing.Point(0, 0)
+    $btnActivate.Size = New-Object System.Drawing.Size(180, 40)
+    $btnActivate.Text = "[OK] AKTIFKAN"
+    $btnActivate.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $btnActivate.ForeColor = [System.Drawing.Color]::White
+    $btnActivate.BackColor = [System.Drawing.Color]::FromArgb(46, 204, 113)
+    $btnActivate.FlatStyle = 'Flat'
+    $btnActivate.FlatAppearance.BorderSize = 0
+    $btnActivate.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(39, 174, 96)
+    $btnActivate.Cursor = [System.Windows.Forms.Cursors]::Hand
     $btnActivate.Add_Click({
         $password = $textPassword.Text
         $confirm = $textConfirm.Text
         
         if ($password -ne $confirm) {
             [System.Windows.Forms.MessageBox]::Show("Password tidak cocok!", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+            return
+        }
+        
+        if ($password.Length -lt 1) {
+            [System.Windows.Forms.MessageBox]::Show("Password tidak boleh kosong!", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
             return
         }
         
@@ -256,14 +338,22 @@ function Enable-BuiltInAdmin {
             [System.Windows.Forms.MessageBox]::Show("Error: $_`n`nKemungkinan akun Administrator sudah aktif atau nama berbeda di sistem Anda.", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
         }
     })
-    $form.Controls.Add($btnActivate)
+    $buttonPanel.Controls.Add($btnActivate)
     
+    # Button Batal
     $btnCancel = New-Object System.Windows.Forms.Button
-    $btnCancel.Location = New-Object System.Drawing.Point(280, 190)
-    $btnCancel.Size = New-Object System.Drawing.Size(80, 25)
-    $btnCancel.Text = "Batal"
+    $btnCancel.Location = New-Object System.Drawing.Point(195, 0)
+    $btnCancel.Size = New-Object System.Drawing.Size(180, 40)
+    $btnCancel.Text = "[X] BATAL"
+    $btnCancel.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $btnCancel.ForeColor = [System.Drawing.Color]::White
+    $btnCancel.BackColor = [System.Drawing.Color]::FromArgb(231, 76, 60)
+    $btnCancel.FlatStyle = 'Flat'
+    $btnCancel.FlatAppearance.BorderSize = 0
+    $btnCancel.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(192, 57, 43)
+    $btnCancel.Cursor = [System.Windows.Forms.Cursors]::Hand
     $btnCancel.Add_Click({ $form.Close() })
-    $form.Controls.Add($btnCancel)
+    $buttonPanel.Controls.Add($btnCancel)
     
     $form.ShowDialog()
 }
@@ -271,22 +361,42 @@ function Enable-BuiltInAdmin {
 function Set-UserPassword {
     $form = New-Object System.Windows.Forms.Form
     $form.Text = "Ubah Password User"
-    $form.Size = New-Object System.Drawing.Size(400, 250)
+    $form.Size = New-Object System.Drawing.Size(450, 390)
     $form.StartPosition = "CenterScreen"
     $form.FormBorderStyle = 'FixedDialog'
     $form.MaximizeBox = $false
+    $form.BackColor = [System.Drawing.Color]::FromArgb(240, 244, 248)
+    
+    # Header Panel
+    $headerPanel = New-Object System.Windows.Forms.Panel
+    $headerPanel.Location = New-Object System.Drawing.Point(0, 0)
+    $headerPanel.Size = New-Object System.Drawing.Size(450, 60)
+    $headerPanel.BackColor = [System.Drawing.Color]::FromArgb(155, 89, 182)
+    $form.Controls.Add($headerPanel)
+    
+    $headerLabel = New-Object System.Windows.Forms.Label
+    $headerLabel.Location = New-Object System.Drawing.Point(15, 15)
+    $headerLabel.Size = New-Object System.Drawing.Size(410, 35)
+    $headerLabel.Text = "Ubah Password User"
+    $headerLabel.Font = New-Object System.Drawing.Font("Segoe UI", 13, [System.Drawing.FontStyle]::Bold)
+    $headerLabel.ForeColor = [System.Drawing.Color]::White
+    $headerPanel.Controls.Add($headerLabel)
     
     # User ComboBox
     $labelUser = New-Object System.Windows.Forms.Label
-    $labelUser.Location = New-Object System.Drawing.Point(20, 20)
-    $labelUser.Size = New-Object System.Drawing.Size(350, 20)
+    $labelUser.Location = New-Object System.Drawing.Point(30, 80)
+    $labelUser.Size = New-Object System.Drawing.Size(380, 22)
     $labelUser.Text = "Pilih User:"
+    $labelUser.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $labelUser.ForeColor = [System.Drawing.Color]::FromArgb(52, 73, 94)
     $form.Controls.Add($labelUser)
     
     $comboUsers = New-Object System.Windows.Forms.ComboBox
-    $comboUsers.Location = New-Object System.Drawing.Point(20, 45)
-    $comboUsers.Size = New-Object System.Drawing.Size(340, 25)
+    $comboUsers.Location = New-Object System.Drawing.Point(30, 105)
+    $comboUsers.Size = New-Object System.Drawing.Size(375, 30)
     $comboUsers.DropDownStyle = 'DropDownList'
+    $comboUsers.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+    $comboUsers.FlatStyle = 'Flat'
     
     $users = Get-LocalUser | Where-Object { $_.Enabled -eq $true }
     foreach ($user in $users) {
@@ -299,36 +409,56 @@ function Set-UserPassword {
     
     # Password
     $labelPass = New-Object System.Windows.Forms.Label
-    $labelPass.Location = New-Object System.Drawing.Point(20, 80)
-    $labelPass.Size = New-Object System.Drawing.Size(350, 20)
+    $labelPass.Location = New-Object System.Drawing.Point(30, 150)
+    $labelPass.Size = New-Object System.Drawing.Size(380, 22)
     $labelPass.Text = "Password Baru:"
+    $labelPass.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $labelPass.ForeColor = [System.Drawing.Color]::FromArgb(52, 73, 94)
     $form.Controls.Add($labelPass)
     
     $textPassword = New-Object System.Windows.Forms.TextBox
-    $textPassword.Location = New-Object System.Drawing.Point(20, 105)
-    $textPassword.Size = New-Object System.Drawing.Size(340, 25)
+    $textPassword.Location = New-Object System.Drawing.Point(30, 175)
+    $textPassword.Size = New-Object System.Drawing.Size(375, 30)
     $textPassword.PasswordChar = '*'
+    $textPassword.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+    $textPassword.BorderStyle = 'FixedSingle'
     $form.Controls.Add($textPassword)
     
     # Confirm Password
     $labelConfirm = New-Object System.Windows.Forms.Label
-    $labelConfirm.Location = New-Object System.Drawing.Point(20, 140)
-    $labelConfirm.Size = New-Object System.Drawing.Size(350, 20)
+    $labelConfirm.Location = New-Object System.Drawing.Point(30, 215)
+    $labelConfirm.Size = New-Object System.Drawing.Size(380, 22)
     $labelConfirm.Text = "Konfirmasi Password:"
+    $labelConfirm.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $labelConfirm.ForeColor = [System.Drawing.Color]::FromArgb(52, 73, 94)
     $form.Controls.Add($labelConfirm)
     
     $textConfirm = New-Object System.Windows.Forms.TextBox
-    $textConfirm.Location = New-Object System.Drawing.Point(20, 165)
-    $textConfirm.Size = New-Object System.Drawing.Size(340, 25)
+    $textConfirm.Location = New-Object System.Drawing.Point(30, 240)
+    $textConfirm.Size = New-Object System.Drawing.Size(375, 30)
     $textConfirm.PasswordChar = '*'
+    $textConfirm.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+    $textConfirm.BorderStyle = 'FixedSingle'
     $form.Controls.Add($textConfirm)
+    
+    # Buttons Panel
+    $buttonPanel = New-Object System.Windows.Forms.Panel
+    $buttonPanel.Location = New-Object System.Drawing.Point(30, 290)
+    $buttonPanel.Size = New-Object System.Drawing.Size(375, 45)
+    $form.Controls.Add($buttonPanel)
     
     # Buttons
     $btnChange = New-Object System.Windows.Forms.Button
-    $btnChange.Location = New-Object System.Drawing.Point(180, 200)
-    $btnChange.Size = New-Object System.Drawing.Size(90, 30)
-    $btnChange.Text = "Ubah"
-    $btnChange.BackColor = [System.Drawing.Color]::LightGreen
+    $btnChange.Location = New-Object System.Drawing.Point(0, 0)
+    $btnChange.Size = New-Object System.Drawing.Size(180, 40)
+    $btnChange.Text = "[OK] UBAH"
+    $btnChange.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $btnChange.ForeColor = [System.Drawing.Color]::White
+    $btnChange.BackColor = [System.Drawing.Color]::FromArgb(46, 204, 113)
+    $btnChange.FlatStyle = 'Flat'
+    $btnChange.FlatAppearance.BorderSize = 0
+    $btnChange.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(39, 174, 96)
+    $btnChange.Cursor = [System.Windows.Forms.Cursors]::Hand
     $btnChange.Add_Click({
         $username = $comboUsers.SelectedItem
         $password = $textPassword.Text
@@ -355,14 +485,21 @@ function Set-UserPassword {
             [System.Windows.Forms.MessageBox]::Show("Error: $_", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
         }
     })
-    $form.Controls.Add($btnChange)
+    $buttonPanel.Controls.Add($btnChange)
     
     $btnCancel = New-Object System.Windows.Forms.Button
-    $btnCancel.Location = New-Object System.Drawing.Point(280, 200)
-    $btnCancel.Size = New-Object System.Drawing.Size(80, 30)
-    $btnCancel.Text = "Batal"
+    $btnCancel.Location = New-Object System.Drawing.Point(195, 0)
+    $btnCancel.Size = New-Object System.Drawing.Size(180, 40)
+    $btnCancel.Text = "[X] BATAL"
+    $btnCancel.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $btnCancel.ForeColor = [System.Drawing.Color]::White
+    $btnCancel.BackColor = [System.Drawing.Color]::FromArgb(231, 76, 60)
+    $btnCancel.FlatStyle = 'Flat'
+    $btnCancel.FlatAppearance.BorderSize = 0
+    $btnCancel.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(192, 57, 43)
+    $btnCancel.Cursor = [System.Windows.Forms.Cursors]::Hand
     $btnCancel.Add_Click({ $form.Close() })
-    $form.Controls.Add($btnCancel)
+    $buttonPanel.Controls.Add($btnCancel)
     
     $form.ShowDialog()
 }
@@ -417,133 +554,175 @@ function Get-SecurityStatus {
 
 $mainForm = New-Object System.Windows.Forms.Form
 $mainForm.Text = "Install Password Lock and User Management Tool"
-$mainForm.Size = New-Object System.Drawing.Size(700, 550)
+$mainForm.Size = New-Object System.Drawing.Size(800, 600)
 $mainForm.StartPosition = "CenterScreen"
 $mainForm.FormBorderStyle = 'FixedDialog'
 $mainForm.MaximizeBox = $false
-$mainForm.BackColor = [System.Drawing.Color]::WhiteSmoke
+$mainForm.BackColor = [System.Drawing.Color]::FromArgb(236, 240, 241)
+
+# Header Panel with Gradient Effect
+$headerPanel = New-Object System.Windows.Forms.Panel
+$headerPanel.Location = New-Object System.Drawing.Point(0, 0)
+$headerPanel.Size = New-Object System.Drawing.Size(800, 80)
+$headerPanel.BackColor = [System.Drawing.Color]::FromArgb(44, 62, 80)
+$mainForm.Controls.Add($headerPanel)
 
 # Title
 $titleLabel = New-Object System.Windows.Forms.Label
 $titleLabel.Location = New-Object System.Drawing.Point(20, 15)
-$titleLabel.Size = New-Object System.Drawing.Size(660, 30)
-$titleLabel.Text = "INSTALL PASSWORD LOCK - USER MANAGEMENT TOOL"
-$titleLabel.Font = New-Object System.Drawing.Font("Arial", 12, [System.Drawing.FontStyle]::Bold)
-$titleLabel.ForeColor = [System.Drawing.Color]::DarkBlue
+$titleLabel.Size = New-Object System.Drawing.Size(760, 35)
+$titleLabel.Text = "[LOCK] INSTALL PASSWORD LOCK - USER MANAGEMENT TOOL"
+$titleLabel.Font = New-Object System.Drawing.Font("Segoe UI", 14, [System.Drawing.FontStyle]::Bold)
+$titleLabel.ForeColor = [System.Drawing.Color]::White
 $titleLabel.TextAlign = 'MiddleCenter'
-$mainForm.Controls.Add($titleLabel)
+$headerPanel.Controls.Add($titleLabel)
 
 # Subtitle
 $subtitleLabel = New-Object System.Windows.Forms.Label
-$subtitleLabel.Location = New-Object System.Drawing.Point(20, 45)
-$subtitleLabel.Size = New-Object System.Drawing.Size(660, 20)
+$subtitleLabel.Location = New-Object System.Drawing.Point(20, 50)
+$subtitleLabel.Size = New-Object System.Drawing.Size(760, 22)
 $subtitleLabel.Text = "Mengunci Instalasi Software dan Manajemen Akun Administrator"
-$subtitleLabel.Font = New-Object System.Drawing.Font("Arial", 9)
-$subtitleLabel.ForeColor = [System.Drawing.Color]::Gray
+$subtitleLabel.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+$subtitleLabel.ForeColor = [System.Drawing.Color]::FromArgb(189, 195, 199)
 $subtitleLabel.TextAlign = 'MiddleCenter'
-$mainForm.Controls.Add($subtitleLabel)
+$headerPanel.Controls.Add($subtitleLabel)
 
 # Panel Buttons
 $buttonPanel = New-Object System.Windows.Forms.Panel
-$buttonPanel.Location = New-Object System.Drawing.Point(20, 80)
-$buttonPanel.Size = New-Object System.Drawing.Size(320, 420)
-$buttonPanel.BorderStyle = 'FixedSingle'
+$buttonPanel.Location = New-Object System.Drawing.Point(25, 95)
+$buttonPanel.Size = New-Object System.Drawing.Size(360, 460)
+$buttonPanel.BackColor = [System.Drawing.Color]::White
+$buttonPanel.BorderStyle = 'None'
 $mainForm.Controls.Add($buttonPanel)
 
 # Panel Title
 $panelTitle = New-Object System.Windows.Forms.Label
-$panelTitle.Location = New-Object System.Drawing.Point(10, 10)
-$panelTitle.Size = New-Object System.Drawing.Size(300, 25)
-$panelTitle.Text = "MENU UTAMA"
-$panelTitle.Font = New-Object System.Drawing.Font("Arial", 11, [System.Drawing.FontStyle]::Bold)
-$panelTitle.ForeColor = [System.Drawing.Color]::DarkGreen
+$panelTitle.Location = New-Object System.Drawing.Point(15, 15)
+$panelTitle.Size = New-Object System.Drawing.Size(330, 30)
+$panelTitle.Text = "[MENU] MENU UTAMA"
+$panelTitle.Font = New-Object System.Drawing.Font("Segoe UI", 12, [System.Drawing.FontStyle]::Bold)
+$panelTitle.ForeColor = [System.Drawing.Color]::FromArgb(52, 73, 94)
 $buttonPanel.Controls.Add($panelTitle)
 
 # Button 1: Aktifkan Kunci
 $btn1 = New-Object System.Windows.Forms.Button
-$btn1.Location = New-Object System.Drawing.Point(10, 45)
-$btn1.Size = New-Object System.Drawing.Size(295, 50)
-$btn1.Text = "[1] AKTIFKAN KUNCI INSTALASI"
-$btn1.Font = New-Object System.Drawing.Font("Arial", 10, [System.Drawing.FontStyle]::Bold)
-$btn1.BackColor = [System.Drawing.Color]::LightGreen
+$btn1.Location = New-Object System.Drawing.Point(15, 55)
+$btn1.Size = New-Object System.Drawing.Size(330, 55)
+$btn1.Text = "[LOCK] AKTIFKAN KUNCI INSTALASI"
+$btn1.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
+$btn1.ForeColor = [System.Drawing.Color]::White
+$btn1.BackColor = [System.Drawing.Color]::FromArgb(46, 204, 113)
+$btn1.FlatStyle = 'Flat'
+$btn1.FlatAppearance.BorderSize = 0
+$btn1.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(39, 174, 96)
+$btn1.Cursor = [System.Windows.Forms.Cursors]::Hand
 $btn1.Add_Click({ Enable-InstallLock })
 $buttonPanel.Controls.Add($btn1)
 
 # Button 2: Nonaktifkan Kunci
 $btn2 = New-Object System.Windows.Forms.Button
-$btn2.Location = New-Object System.Drawing.Point(10, 105)
-$btn2.Size = New-Object System.Drawing.Size(295, 50)
-$btn2.Text = "[2] NONAKTIFKAN KUNCI INSTALASI"
-$btn2.Font = New-Object System.Drawing.Font("Arial", 10)
-$btn2.BackColor = [System.Drawing.Color]::LightCoral
+$btn2.Location = New-Object System.Drawing.Point(15, 120)
+$btn2.Size = New-Object System.Drawing.Size(330, 55)
+$btn2.Text = "[UNLOCK] NONAKTIFKAN KUNCI INSTALASI"
+$btn2.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
+$btn2.ForeColor = [System.Drawing.Color]::White
+$btn2.BackColor = [System.Drawing.Color]::FromArgb(231, 76, 60)
+$btn2.FlatStyle = 'Flat'
+$btn2.FlatAppearance.BorderSize = 0
+$btn2.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(192, 57, 43)
+$btn2.Cursor = [System.Windows.Forms.Cursors]::Hand
 $btn2.Add_Click({ Disable-InstallLock })
 $buttonPanel.Controls.Add($btn2)
 
 # Button 3: Buat Admin Baru
 $btn3 = New-Object System.Windows.Forms.Button
-$btn3.Location = New-Object System.Drawing.Point(10, 165)
-$btn3.Size = New-Object System.Drawing.Size(295, 50)
-$btn3.Text = "[3] BUAT AKUN ADMINISTRATOR BARU"
-$btn3.Font = New-Object System.Drawing.Font("Arial", 10)
-$btn3.BackColor = [System.Drawing.Color]::LightBlue
+$btn3.Location = New-Object System.Drawing.Point(15, 185)
+$btn3.Size = New-Object System.Drawing.Size(330, 55)
+$btn3.Text = "[USER] BUAT AKUN ADMINISTRATOR BARU"
+$btn3.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
+$btn3.ForeColor = [System.Drawing.Color]::White
+$btn3.BackColor = [System.Drawing.Color]::FromArgb(52, 152, 219)
+$btn3.FlatStyle = 'Flat'
+$btn3.FlatAppearance.BorderSize = 0
+$btn3.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(41, 128, 185)
+$btn3.Cursor = [System.Windows.Forms.Cursors]::Hand
 $btn3.Add_Click({ New-AdminAccount })
 $buttonPanel.Controls.Add($btn3)
 
 # Button 4: Aktifkan Admin Built-in
 $btn4 = New-Object System.Windows.Forms.Button
-$btn4.Location = New-Object System.Drawing.Point(10, 225)
-$btn4.Size = New-Object System.Drawing.Size(295, 50)
-$btn4.Text = "[4] AKTIFKAN ADMINISTRATOR BUILT-IN"
-$btn4.Font = New-Object System.Drawing.Font("Arial", 10)
-$btn4.BackColor = [System.Drawing.Color]::LightGoldenrodYellow
+$btn4.Location = New-Object System.Drawing.Point(15, 250)
+$btn4.Size = New-Object System.Drawing.Size(330, 55)
+$btn4.Text = "[ADMIN] AKTIFKAN ADMINISTRATOR BUILT-IN"
+$btn4.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
+$btn4.ForeColor = [System.Drawing.Color]::White
+$btn4.BackColor = [System.Drawing.Color]::FromArgb(243, 156, 18)
+$btn4.FlatStyle = 'Flat'
+$btn4.FlatAppearance.BorderSize = 0
+$btn4.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(211, 136, 16)
+$btn4.Cursor = [System.Windows.Forms.Cursors]::Hand
 $btn4.Add_Click({ Enable-BuiltInAdmin })
 $buttonPanel.Controls.Add($btn4)
 
 # Button 5: Ubah Password
 $btn5 = New-Object System.Windows.Forms.Button
-$btn5.Location = New-Object System.Drawing.Point(10, 285)
-$btn5.Size = New-Object System.Drawing.Size(295, 50)
-$btn5.Text = "[5] UBAH PASSWORD USER"
-$btn5.Font = New-Object System.Drawing.Font("Arial", 10)
-$btn5.BackColor = [System.Drawing.Color]::Plum
+$btn5.Location = New-Object System.Drawing.Point(15, 315)
+$btn5.Size = New-Object System.Drawing.Size(330, 55)
+$btn5.Text = "[PASS] UBAH PASSWORD USER"
+$btn5.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
+$btn5.ForeColor = [System.Drawing.Color]::White
+$btn5.BackColor = [System.Drawing.Color]::FromArgb(155, 89, 182)
+$btn5.FlatStyle = 'Flat'
+$btn5.FlatAppearance.BorderSize = 0
+$btn5.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(142, 68, 173)
+$btn5.Cursor = [System.Windows.Forms.Cursors]::Hand
 $btn5.Add_Click({ Set-UserPassword })
 $buttonPanel.Controls.Add($btn5)
 
 # Button 6: Refresh Status
 $btn6 = New-Object System.Windows.Forms.Button
-$btn6.Location = New-Object System.Drawing.Point(10, 345)
-$btn6.Size = New-Object System.Drawing.Size(295, 35)
-$btn6.Text = "[6] REFRESH STATUS"
-$btn6.Font = New-Object System.Drawing.Font("Arial", 9)
-$btn6.BackColor = [System.Drawing.Color]::White
+$btn6.Location = New-Object System.Drawing.Point(15, 380)
+$btn6.Size = New-Object System.Drawing.Size(330, 45)
+$btn6.Text = "[REFRESH] REFRESH STATUS"
+$btn6.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+$btn6.ForeColor = [System.Drawing.Color]::FromArgb(52, 73, 94)
+$btn6.BackColor = [System.Drawing.Color]::FromArgb(236, 240, 241)
+$btn6.FlatStyle = 'Flat'
+$btn6.FlatAppearance.BorderSize = 1
+$btn6.FlatAppearance.BorderColor = [System.Drawing.Color]::FromArgb(189, 195, 199)
+$btn6.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(189, 195, 199)
+$btn6.Cursor = [System.Windows.Forms.Cursors]::Hand
 $btn6.Add_Click({ Update-StatusDisplay })
 $buttonPanel.Controls.Add($btn6)
 
 # Panel Status
 $statusPanel = New-Object System.Windows.Forms.Panel
-$statusPanel.Location = New-Object System.Drawing.Point(350, 80)
-$statusPanel.Size = New-Object System.Drawing.Size(320, 420)
-$statusPanel.BorderStyle = 'FixedSingle'
+$statusPanel.Location = New-Object System.Drawing.Point(400, 95)
+$statusPanel.Size = New-Object System.Drawing.Size(375, 460)
+$statusPanel.BackColor = [System.Drawing.Color]::White
+$statusPanel.BorderStyle = 'None'
 $mainForm.Controls.Add($statusPanel)
 
 # Status Title
 $statusTitleLabel = New-Object System.Windows.Forms.Label
-$statusTitleLabel.Location = New-Object System.Drawing.Point(10, 10)
-$statusTitleLabel.Size = New-Object System.Drawing.Size(300, 25)
-$statusTitleLabel.Text = "STATUS KEAMANAN SISTEM"
-$statusTitleLabel.Font = New-Object System.Drawing.Font("Arial", 11, [System.Drawing.FontStyle]::Bold)
-$statusTitleLabel.ForeColor = [System.Drawing.Color]::DarkBlue
+$statusTitleLabel.Location = New-Object System.Drawing.Point(15, 15)
+$statusTitleLabel.Size = New-Object System.Drawing.Size(345, 30)
+$statusTitleLabel.Text = "[STATUS] STATUS KEAMANAN SISTEM"
+$statusTitleLabel.Font = New-Object System.Drawing.Font("Segoe UI", 12, [System.Drawing.FontStyle]::Bold)
+$statusTitleLabel.ForeColor = [System.Drawing.Color]::FromArgb(52, 73, 94)
 $statusPanel.Controls.Add($statusTitleLabel)
 
 # Status TextBox
 $statusText = New-Object System.Windows.Forms.TextBox
-$statusText.Location = New-Object System.Drawing.Point(10, 45)
-$statusText.Size = New-Object System.Drawing.Size(295, 360)
+$statusText.Location = New-Object System.Drawing.Point(15, 55)
+$statusText.Size = New-Object System.Drawing.Size(345, 385)
 $statusText.Multiline = $true
 $statusText.ScrollBars = 'Vertical'
 $statusText.ReadOnly = $true
 $statusText.Font = New-Object System.Drawing.Font("Consolas", 9)
-$statusText.BackColor = [System.Drawing.Color]::White
+$statusText.BackColor = [System.Drawing.Color]::FromArgb(250, 250, 250)
+$statusText.BorderStyle = 'FixedSingle'
+$statusText.ForeColor = [System.Drawing.Color]::FromArgb(52, 73, 94)
 $statusPanel.Controls.Add($statusText)
 
 # Initial status load
