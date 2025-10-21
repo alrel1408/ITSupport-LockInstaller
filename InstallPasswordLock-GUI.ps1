@@ -81,10 +81,10 @@ function Disable-InstallLock {
     }
 }
 
-function New-AdminAccount {
+function New-UserProfile {
     $form = New-Object System.Windows.Forms.Form
-    $form.Text = "Buat Akun Administrator Baru"
-    $form.Size = New-Object System.Drawing.Size(450, 400)
+    $form.Text = "Tambahkan Profil Akun Baru"
+    $form.Size = New-Object System.Drawing.Size(450, 480)
     $form.StartPosition = "CenterScreen"
     $form.FormBorderStyle = 'FixedDialog'
     $form.MaximizeBox = $false
@@ -100,7 +100,7 @@ function New-AdminAccount {
     $headerLabel = New-Object System.Windows.Forms.Label
     $headerLabel.Location = New-Object System.Drawing.Point(15, 15)
     $headerLabel.Size = New-Object System.Drawing.Size(410, 35)
-    $headerLabel.Text = "Buat Akun Administrator Baru"
+    $headerLabel.Text = "Tambahkan Profil Akun Baru"
     $headerLabel.Font = New-Object System.Drawing.Font("Segoe UI", 13, [System.Drawing.FontStyle]::Bold)
     $headerLabel.ForeColor = [System.Drawing.Color]::White
     $headerPanel.Controls.Add($headerLabel)
@@ -155,9 +155,41 @@ function New-AdminAccount {
     $textConfirm.BorderStyle = 'FixedSingle'
     $form.Controls.Add($textConfirm)
     
+    # Role Selection Label
+    $labelRole = New-Object System.Windows.Forms.Label
+    $labelRole.Location = New-Object System.Drawing.Point(30, 275)
+    $labelRole.Size = New-Object System.Drawing.Size(380, 22)
+    $labelRole.Text = "Pilih Tipe Akun:"
+    $labelRole.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $labelRole.ForeColor = [System.Drawing.Color]::FromArgb(52, 73, 94)
+    $form.Controls.Add($labelRole)
+    
+    # Radio Buttons for Role Selection
+    $radioPanel = New-Object System.Windows.Forms.Panel
+    $radioPanel.Location = New-Object System.Drawing.Point(30, 300)
+    $radioPanel.Size = New-Object System.Drawing.Size(375, 90)
+    $form.Controls.Add($radioPanel)
+    
+    $radioAdmin = New-Object System.Windows.Forms.RadioButton
+    $radioAdmin.Location = New-Object System.Drawing.Point(0, 0)
+    $radioAdmin.Size = New-Object System.Drawing.Size(350, 25)
+    $radioAdmin.Text = "Administrator (Dapat install software dan mengubah sistem)"
+    $radioAdmin.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+    $radioAdmin.ForeColor = [System.Drawing.Color]::FromArgb(52, 73, 94)
+    $radioAdmin.Checked = $true
+    $radioPanel.Controls.Add($radioAdmin)
+    
+    $radioUser = New-Object System.Windows.Forms.RadioButton
+    $radioUser.Location = New-Object System.Drawing.Point(0, 35)
+    $radioUser.Size = New-Object System.Drawing.Size(350, 40)
+    $radioUser.Text = "Standard User (Dapat login normal, tidak dapat install software)"
+    $radioUser.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+    $radioUser.ForeColor = [System.Drawing.Color]::FromArgb(52, 73, 94)
+    $radioPanel.Controls.Add($radioUser)
+    
     # Buttons Panel
     $buttonPanel = New-Object System.Windows.Forms.Panel
-    $buttonPanel.Location = New-Object System.Drawing.Point(30, 290)
+    $buttonPanel.Location = New-Object System.Drawing.Point(30, 400)
     $buttonPanel.Size = New-Object System.Drawing.Size(375, 45)
     $form.Controls.Add($buttonPanel)
     
@@ -165,7 +197,7 @@ function New-AdminAccount {
     $btnCreate = New-Object System.Windows.Forms.Button
     $btnCreate.Location = New-Object System.Drawing.Point(0, 0)
     $btnCreate.Size = New-Object System.Drawing.Size(180, 40)
-    $btnCreate.Text = "[OK] BUAT"
+    $btnCreate.Text = "[OK] BUAT PROFIL"
     $btnCreate.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
     $btnCreate.ForeColor = [System.Drawing.Color]::White
     $btnCreate.BackColor = [System.Drawing.Color]::FromArgb(46, 204, 113)
@@ -200,16 +232,34 @@ function New-AdminAccount {
                 return
             }
             
-            $securePassword = ConvertTo-SecureString $password -AsPlainText -Force
-            New-LocalUser -Name $username -Password $securePassword -FullName $username -Description "Administrator Account" -PasswordNeverExpires -ErrorAction Stop | Out-Null
-            Add-LocalGroupMember -Group "Administrators" -Member $username -ErrorAction Stop
+            # Determine role and description
+            $isAdmin = $radioAdmin.Checked
+            $roleText = if ($isAdmin) { "Administrator" } else { "Standard User" }
+            $description = if ($isAdmin) { "Administrator Account" } else { "Standard User Account" }
             
-            [System.Windows.Forms.MessageBox]::Show("User '$username' berhasil dibuat sebagai Administrator!", "Sukses", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+            # Create the user
+            $securePassword = ConvertTo-SecureString $password -AsPlainText -Force
+            New-LocalUser -Name $username -Password $securePassword -FullName $username -Description $description -PasswordNeverExpires -ErrorAction Stop | Out-Null
+            
+            # Add to appropriate groups
+            if ($isAdmin) {
+                # Add to Administrators group
+                Add-LocalGroupMember -Group "Administrators" -Member $username -ErrorAction Stop
+            }
+            
+            # Always add to Users group (standard practice for all users)
+            try {
+                Add-LocalGroupMember -Group "Users" -Member $username -ErrorAction SilentlyContinue
+            } catch {
+                # User might already be in Users group, ignore error
+            }
+            
+            [System.Windows.Forms.MessageBox]::Show("Profil '$username' berhasil dibuat sebagai $roleText!", "Sukses", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
             $form.Close()
             Update-StatusDisplay
         }
         catch {
-            [System.Windows.Forms.MessageBox]::Show("Error membuat user: $_", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
+            [System.Windows.Forms.MessageBox]::Show("Error membuat profil: $_", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
         }
     })
     $buttonPanel.Controls.Add($btnCreate)
@@ -504,6 +554,387 @@ function Set-UserPassword {
     $form.ShowDialog()
 }
 
+function Remove-UserAccount {
+    $form = New-Object System.Windows.Forms.Form
+    $form.Text = "Hapus User Account"
+    $form.Size = New-Object System.Drawing.Size(450, 350)
+    $form.StartPosition = "CenterScreen"
+    $form.FormBorderStyle = 'FixedDialog'
+    $form.MaximizeBox = $false
+    $form.BackColor = [System.Drawing.Color]::FromArgb(240, 244, 248)
+    
+    # Header Panel
+    $headerPanel = New-Object System.Windows.Forms.Panel
+    $headerPanel.Location = New-Object System.Drawing.Point(0, 0)
+    $headerPanel.Size = New-Object System.Drawing.Size(450, 60)
+    $headerPanel.BackColor = [System.Drawing.Color]::FromArgb(231, 76, 60)
+    $form.Controls.Add($headerPanel)
+    
+    $headerLabel = New-Object System.Windows.Forms.Label
+    $headerLabel.Location = New-Object System.Drawing.Point(15, 15)
+    $headerLabel.Size = New-Object System.Drawing.Size(410, 35)
+    $headerLabel.Text = "Hapus User Account"
+    $headerLabel.Font = New-Object System.Drawing.Font("Segoe UI", 13, [System.Drawing.FontStyle]::Bold)
+    $headerLabel.ForeColor = [System.Drawing.Color]::White
+    $headerPanel.Controls.Add($headerLabel)
+    
+    # Warning Label
+    $warningLabel = New-Object System.Windows.Forms.Label
+    $warningLabel.Location = New-Object System.Drawing.Point(30, 80)
+    $warningLabel.Size = New-Object System.Drawing.Size(380, 40)
+    $warningLabel.Text = "PERINGATAN: Tindakan ini akan menghapus user secara permanen!"
+    $warningLabel.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $warningLabel.ForeColor = [System.Drawing.Color]::FromArgb(231, 76, 60)
+    $form.Controls.Add($warningLabel)
+    
+    # User ComboBox
+    $labelUser = New-Object System.Windows.Forms.Label
+    $labelUser.Location = New-Object System.Drawing.Point(30, 130)
+    $labelUser.Size = New-Object System.Drawing.Size(380, 22)
+    $labelUser.Text = "Pilih User yang akan dihapus:"
+    $labelUser.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $labelUser.ForeColor = [System.Drawing.Color]::FromArgb(52, 73, 94)
+    $form.Controls.Add($labelUser)
+    
+    $comboUsers = New-Object System.Windows.Forms.ComboBox
+    $comboUsers.Location = New-Object System.Drawing.Point(30, 155)
+    $comboUsers.Size = New-Object System.Drawing.Size(375, 30)
+    $comboUsers.DropDownStyle = 'DropDownList'
+    $comboUsers.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+    $comboUsers.FlatStyle = 'Flat'
+    
+    # Get all local users except built-in accounts and current user
+    $currentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name.Split('\')[-1]
+    $users = Get-LocalUser | Where-Object { 
+        $_.Enabled -eq $true -and 
+        $_.Name -ne "Administrator" -and 
+        $_.Name -ne "Guest" -and 
+        $_.Name -ne "DefaultAccount" -and
+        $_.Name -ne "WDAGUtilityAccount" -and
+        $_.Name -ne $currentUser
+    }
+    
+    foreach ($user in $users) {
+        $comboUsers.Items.Add($user.Name) | Out-Null
+    }
+    if ($comboUsers.Items.Count -gt 0) {
+        $comboUsers.SelectedIndex = 0
+    }
+    $form.Controls.Add($comboUsers)
+    
+    # Info Label
+    $infoLabel = New-Object System.Windows.Forms.Label
+    $infoLabel.Location = New-Object System.Drawing.Point(30, 195)
+    $infoLabel.Size = New-Object System.Drawing.Size(380, 40)
+    $infoLabel.Text = "User yang sedang login dan akun built-in tidak dapat dihapus."
+    $infoLabel.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+    $infoLabel.ForeColor = [System.Drawing.Color]::FromArgb(127, 140, 141)
+    $form.Controls.Add($infoLabel)
+    
+    # Buttons Panel
+    $buttonPanel = New-Object System.Windows.Forms.Panel
+    $buttonPanel.Location = New-Object System.Drawing.Point(30, 250)
+    $buttonPanel.Size = New-Object System.Drawing.Size(375, 45)
+    $form.Controls.Add($buttonPanel)
+    
+    # Button Hapus
+    $btnDelete = New-Object System.Windows.Forms.Button
+    $btnDelete.Location = New-Object System.Drawing.Point(0, 0)
+    $btnDelete.Size = New-Object System.Drawing.Size(180, 40)
+    $btnDelete.Text = "[DELETE] HAPUS"
+    $btnDelete.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $btnDelete.ForeColor = [System.Drawing.Color]::White
+    $btnDelete.BackColor = [System.Drawing.Color]::FromArgb(231, 76, 60)
+    $btnDelete.FlatStyle = 'Flat'
+    $btnDelete.FlatAppearance.BorderSize = 0
+    $btnDelete.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(192, 57, 43)
+    $btnDelete.Cursor = [System.Windows.Forms.Cursors]::Hand
+    $btnDelete.Add_Click({
+        if ($comboUsers.Items.Count -eq 0) {
+            [System.Windows.Forms.MessageBox]::Show("Tidak ada user yang dapat dihapus!", "Info", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+            return
+        }
+        
+        $username = $comboUsers.SelectedItem
+        if ([string]::IsNullOrEmpty($username)) {
+            [System.Windows.Forms.MessageBox]::Show("Pilih user yang akan dihapus!", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+            return
+        }
+        
+        $result = [System.Windows.Forms.MessageBox]::Show(
+            "Apakah Anda yakin ingin menghapus user '$username'?`n`nTindakan ini tidak dapat dibatalkan!",
+            "Konfirmasi Hapus User",
+            [System.Windows.Forms.MessageBoxButtons]::YesNo,
+            [System.Windows.Forms.MessageBoxIcon]::Warning
+        )
+        
+        if ($result -eq [System.Windows.Forms.DialogResult]::Yes) {
+            try {
+                # Remove from Administrators group first (if member)
+                try {
+                    Remove-LocalGroupMember -Group "Administrators" -Member $username -ErrorAction SilentlyContinue
+                } catch {
+                    # User might not be in Administrators group, continue
+                }
+                
+                # Remove the user account
+                Remove-LocalUser -Name $username -ErrorAction Stop
+                
+                [System.Windows.Forms.MessageBox]::Show("User '$username' berhasil dihapus!", "Sukses", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+                $form.Close()
+                Update-StatusDisplay
+            }
+            catch {
+                [System.Windows.Forms.MessageBox]::Show("Error menghapus user: $_", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
+            }
+        }
+    })
+    $buttonPanel.Controls.Add($btnDelete)
+    
+    # Button Batal
+    $btnCancel = New-Object System.Windows.Forms.Button
+    $btnCancel.Location = New-Object System.Drawing.Point(195, 0)
+    $btnCancel.Size = New-Object System.Drawing.Size(180, 40)
+    $btnCancel.Text = "[X] BATAL"
+    $btnCancel.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $btnCancel.ForeColor = [System.Drawing.Color]::White
+    $btnCancel.BackColor = [System.Drawing.Color]::FromArgb(127, 140, 141)
+    $btnCancel.FlatStyle = 'Flat'
+    $btnCancel.FlatAppearance.BorderSize = 0
+    $btnCancel.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(108, 122, 137)
+    $btnCancel.Cursor = [System.Windows.Forms.Cursors]::Hand
+    $btnCancel.Add_Click({ $form.Close() })
+    $buttonPanel.Controls.Add($btnCancel)
+    
+    $form.ShowDialog()
+}
+
+function Set-UserRole {
+    $form = New-Object System.Windows.Forms.Form
+    $form.Text = "Ubah Status User (Admin/User Biasa)"
+    $form.Size = New-Object System.Drawing.Size(450, 380)
+    $form.StartPosition = "CenterScreen"
+    $form.FormBorderStyle = 'FixedDialog'
+    $form.MaximizeBox = $false
+    $form.BackColor = [System.Drawing.Color]::FromArgb(240, 244, 248)
+    
+    # Header Panel
+    $headerPanel = New-Object System.Windows.Forms.Panel
+    $headerPanel.Location = New-Object System.Drawing.Point(0, 0)
+    $headerPanel.Size = New-Object System.Drawing.Size(450, 60)
+    $headerPanel.BackColor = [System.Drawing.Color]::FromArgb(52, 152, 219)
+    $form.Controls.Add($headerPanel)
+    
+    $headerLabel = New-Object System.Windows.Forms.Label
+    $headerLabel.Location = New-Object System.Drawing.Point(15, 15)
+    $headerLabel.Size = New-Object System.Drawing.Size(410, 35)
+    $headerLabel.Text = "Ubah Status User (Admin/User Biasa)"
+    $headerLabel.Font = New-Object System.Drawing.Font("Segoe UI", 12, [System.Drawing.FontStyle]::Bold)
+    $headerLabel.ForeColor = [System.Drawing.Color]::White
+    $headerPanel.Controls.Add($headerLabel)
+    
+    # User ComboBox
+    $labelUser = New-Object System.Windows.Forms.Label
+    $labelUser.Location = New-Object System.Drawing.Point(30, 80)
+    $labelUser.Size = New-Object System.Drawing.Size(380, 22)
+    $labelUser.Text = "Pilih User:"
+    $labelUser.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $labelUser.ForeColor = [System.Drawing.Color]::FromArgb(52, 73, 94)
+    $form.Controls.Add($labelUser)
+    
+    $comboUsers = New-Object System.Windows.Forms.ComboBox
+    $comboUsers.Location = New-Object System.Drawing.Point(30, 105)
+    $comboUsers.Size = New-Object System.Drawing.Size(375, 30)
+    $comboUsers.DropDownStyle = 'DropDownList'
+    $comboUsers.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+    $comboUsers.FlatStyle = 'Flat'
+    
+    # Get all local users except built-in accounts
+    $users = Get-LocalUser | Where-Object { 
+        $_.Enabled -eq $true -and 
+        $_.Name -ne "Guest" -and 
+        $_.Name -ne "DefaultAccount" -and
+        $_.Name -ne "WDAGUtilityAccount"
+    }
+    
+    foreach ($user in $users) {
+        # Check if user is admin
+        $isAdmin = $false
+        try {
+            $adminMembers = Get-LocalGroupMember -Group "Administrators" -ErrorAction SilentlyContinue
+            $isAdmin = $adminMembers | Where-Object { $_.Name.Split('\')[-1] -eq $user.Name }
+        } catch {}
+        
+        $status = if ($isAdmin) { " (Administrator)" } else { " (User Biasa)" }
+        $comboUsers.Items.Add($user.Name + $status) | Out-Null
+    }
+    if ($comboUsers.Items.Count -gt 0) {
+        $comboUsers.SelectedIndex = 0
+    }
+    $form.Controls.Add($comboUsers)
+    
+    # Current Status Label
+    $labelCurrentStatus = New-Object System.Windows.Forms.Label
+    $labelCurrentStatus.Location = New-Object System.Drawing.Point(30, 145)
+    $labelCurrentStatus.Size = New-Object System.Drawing.Size(380, 22)
+    $labelCurrentStatus.Text = "Status Baru:"
+    $labelCurrentStatus.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $labelCurrentStatus.ForeColor = [System.Drawing.Color]::FromArgb(52, 73, 94)
+    $form.Controls.Add($labelCurrentStatus)
+    
+    # Radio Buttons for Role Selection
+    $radioPanel = New-Object System.Windows.Forms.Panel
+    $radioPanel.Location = New-Object System.Drawing.Point(30, 170)
+    $radioPanel.Size = New-Object System.Drawing.Size(375, 90)
+    $form.Controls.Add($radioPanel)
+    
+    $radioAdmin = New-Object System.Windows.Forms.RadioButton
+    $radioAdmin.Location = New-Object System.Drawing.Point(0, 0)
+    $radioAdmin.Size = New-Object System.Drawing.Size(350, 25)
+    $radioAdmin.Text = "Administrator (Dapat install software dan mengubah sistem)"
+    $radioAdmin.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+    $radioAdmin.ForeColor = [System.Drawing.Color]::FromArgb(52, 73, 94)
+    $radioAdmin.Checked = $true
+    $radioPanel.Controls.Add($radioAdmin)
+    
+    $radioUser = New-Object System.Windows.Forms.RadioButton
+    $radioUser.Location = New-Object System.Drawing.Point(0, 35)
+    $radioUser.Size = New-Object System.Drawing.Size(350, 40)
+    $radioUser.Text = "Standard User (Dapat login normal, tidak dapat install software)"
+    $radioUser.Font = New-Object System.Drawing.Font("Segoe UI", 10)
+    $radioUser.ForeColor = [System.Drawing.Color]::FromArgb(52, 73, 94)
+    $radioPanel.Controls.Add($radioUser)
+    
+    # Info Label
+    $infoLabel = New-Object System.Windows.Forms.Label
+    $infoLabel.Location = New-Object System.Drawing.Point(30, 270)
+    $infoLabel.Size = New-Object System.Drawing.Size(380, 30)
+    $infoLabel.Text = "Perubahan akan berlaku segera setelah dikonfirmasi."
+    $infoLabel.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+    $infoLabel.ForeColor = [System.Drawing.Color]::FromArgb(127, 140, 141)
+    $form.Controls.Add($infoLabel)
+    
+    # Buttons Panel
+    $buttonPanel = New-Object System.Windows.Forms.Panel
+    $buttonPanel.Location = New-Object System.Drawing.Point(30, 310)
+    $buttonPanel.Size = New-Object System.Drawing.Size(375, 45)
+    $form.Controls.Add($buttonPanel)
+    
+    # Button Ubah
+    $btnChange = New-Object System.Windows.Forms.Button
+    $btnChange.Location = New-Object System.Drawing.Point(0, 0)
+    $btnChange.Size = New-Object System.Drawing.Size(180, 40)
+    $btnChange.Text = "[OK] UBAH STATUS"
+    $btnChange.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $btnChange.ForeColor = [System.Drawing.Color]::White
+    $btnChange.BackColor = [System.Drawing.Color]::FromArgb(46, 204, 113)
+    $btnChange.FlatStyle = 'Flat'
+    $btnChange.FlatAppearance.BorderSize = 0
+    $btnChange.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(39, 174, 96)
+    $btnChange.Cursor = [System.Windows.Forms.Cursors]::Hand
+    $btnChange.Add_Click({
+        if ($comboUsers.Items.Count -eq 0) {
+            [System.Windows.Forms.MessageBox]::Show("Tidak ada user yang tersedia!", "Info", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+            return
+        }
+        
+        $selectedItem = $comboUsers.SelectedItem
+        if ([string]::IsNullOrEmpty($selectedItem)) {
+            [System.Windows.Forms.MessageBox]::Show("Pilih user terlebih dahulu!", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Warning)
+            return
+        }
+        
+        # Extract username from selection (remove status part)
+        $username = $selectedItem.Split(' (')[0]
+        $newRole = if ($radioAdmin.Checked) { "Administrator" } else { "User Biasa" }
+        
+        # Check current status
+        $isCurrentlyAdmin = $false
+        try {
+            $adminMembers = Get-LocalGroupMember -Group "Administrators" -ErrorAction SilentlyContinue
+            $isCurrentlyAdmin = $adminMembers | Where-Object { $_.Name.Split('\')[-1] -eq $username }
+        } catch {}
+        
+        $currentRole = if ($isCurrentlyAdmin) { "Administrator" } else { "User Biasa" }
+        
+        if ($currentRole -eq $newRole) {
+            [System.Windows.Forms.MessageBox]::Show("User '$username' sudah memiliki status '$newRole'!", "Info", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+            return
+        }
+        
+        try {
+            if ($radioAdmin.Checked) {
+                # Add to Administrators group
+                Add-LocalGroupMember -Group "Administrators" -Member $username -ErrorAction Stop
+                
+                # Ensure user is also in Users group (standard practice)
+                try {
+                    Add-LocalGroupMember -Group "Users" -Member $username -ErrorAction SilentlyContinue
+                } catch {
+                    # User might already be in Users group, ignore error
+                }
+                
+                $message = "User '$username' berhasil dijadikan Administrator!"
+            } else {
+                # Remove from Administrators group
+                Remove-LocalGroupMember -Group "Administrators" -Member $username -ErrorAction Stop
+                
+                # Ensure user is in Users group so they can still login
+                try {
+                    Add-LocalGroupMember -Group "Users" -Member $username -ErrorAction SilentlyContinue
+                } catch {
+                    # User might already be in Users group, ignore error
+                }
+                
+                $message = "User '$username' berhasil dijadikan User Biasa (Standard User)!`n`nUser masih dapat login normal tetapi tidak dapat install software."
+            }
+            
+            [System.Windows.Forms.MessageBox]::Show($message, "Sukses", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Information)
+            $form.Close()
+            Update-StatusDisplay
+        }
+        catch {
+            [System.Windows.Forms.MessageBox]::Show("Error mengubah status user: $_", "Error", [System.Windows.Forms.MessageBoxButtons]::OK, [System.Windows.Forms.MessageBoxIcon]::Error)
+        }
+    })
+    $buttonPanel.Controls.Add($btnChange)
+    
+    # Button Batal
+    $btnCancel = New-Object System.Windows.Forms.Button
+    $btnCancel.Location = New-Object System.Drawing.Point(195, 0)
+    $btnCancel.Size = New-Object System.Drawing.Size(180, 40)
+    $btnCancel.Text = "[X] BATAL"
+    $btnCancel.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+    $btnCancel.ForeColor = [System.Drawing.Color]::White
+    $btnCancel.BackColor = [System.Drawing.Color]::FromArgb(127, 140, 141)
+    $btnCancel.FlatStyle = 'Flat'
+    $btnCancel.FlatAppearance.BorderSize = 0
+    $btnCancel.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(108, 122, 137)
+    $btnCancel.Cursor = [System.Windows.Forms.Cursors]::Hand
+    $btnCancel.Add_Click({ $form.Close() })
+    $buttonPanel.Controls.Add($btnCancel)
+    
+    # Update radio buttons based on selection
+    $comboUsers.Add_SelectedIndexChanged({
+        if ($comboUsers.SelectedItem) {
+            $selectedUser = $comboUsers.SelectedItem.Split(' (')[0]
+            $isAdmin = $false
+            try {
+                $adminMembers = Get-LocalGroupMember -Group "Administrators" -ErrorAction SilentlyContinue
+                $isAdmin = $adminMembers | Where-Object { $_.Name.Split('\')[-1] -eq $selectedUser }
+            } catch {}
+            
+            if ($isAdmin) {
+                $radioUser.Checked = $true
+            } else {
+                $radioAdmin.Checked = $true
+            }
+        }
+    })
+    
+    $form.ShowDialog()
+}
+
 function Update-StatusDisplay {
     $statusText.Text = Get-SecurityStatus
 }
@@ -553,8 +984,8 @@ function Get-SecurityStatus {
 # ============================================
 
 $mainForm = New-Object System.Windows.Forms.Form
-$mainForm.Text = "Install Password Lock and User Management Tool"
-$mainForm.Size = New-Object System.Drawing.Size(800, 600)
+$mainForm.Text = "User Management Script BY @alrel1408"
+$mainForm.Size = New-Object System.Drawing.Size(800, 705)
 $mainForm.StartPosition = "CenterScreen"
 $mainForm.FormBorderStyle = 'FixedDialog'
 $mainForm.MaximizeBox = $false
@@ -571,7 +1002,7 @@ $mainForm.Controls.Add($headerPanel)
 $titleLabel = New-Object System.Windows.Forms.Label
 $titleLabel.Location = New-Object System.Drawing.Point(20, 15)
 $titleLabel.Size = New-Object System.Drawing.Size(760, 35)
-$titleLabel.Text = "[LOCK] INSTALL PASSWORD LOCK - USER MANAGEMENT TOOL"
+$titleLabel.Text = "[LOCK] USER MANAGEMENT ACCOUNT"
 $titleLabel.Font = New-Object System.Drawing.Font("Segoe UI", 14, [System.Drawing.FontStyle]::Bold)
 $titleLabel.ForeColor = [System.Drawing.Color]::White
 $titleLabel.TextAlign = 'MiddleCenter'
@@ -581,7 +1012,7 @@ $headerPanel.Controls.Add($titleLabel)
 $subtitleLabel = New-Object System.Windows.Forms.Label
 $subtitleLabel.Location = New-Object System.Drawing.Point(20, 50)
 $subtitleLabel.Size = New-Object System.Drawing.Size(760, 22)
-$subtitleLabel.Text = "Mengunci Instalasi Software dan Manajemen Akun Administrator"
+$subtitleLabel.Text = "Membatasi Instalasi dan Manajemen Admin dan User"
 $subtitleLabel.Font = New-Object System.Drawing.Font("Segoe UI", 10)
 $subtitleLabel.ForeColor = [System.Drawing.Color]::FromArgb(189, 195, 199)
 $subtitleLabel.TextAlign = 'MiddleCenter'
@@ -590,7 +1021,7 @@ $headerPanel.Controls.Add($subtitleLabel)
 # Panel Buttons
 $buttonPanel = New-Object System.Windows.Forms.Panel
 $buttonPanel.Location = New-Object System.Drawing.Point(25, 95)
-$buttonPanel.Size = New-Object System.Drawing.Size(360, 460)
+$buttonPanel.Size = New-Object System.Drawing.Size(360, 565)
 $buttonPanel.BackColor = [System.Drawing.Color]::White
 $buttonPanel.BorderStyle = 'None'
 $mainForm.Controls.Add($buttonPanel)
@@ -634,11 +1065,11 @@ $btn2.Cursor = [System.Windows.Forms.Cursors]::Hand
 $btn2.Add_Click({ Disable-InstallLock })
 $buttonPanel.Controls.Add($btn2)
 
-# Button 3: Buat Admin Baru
+# Button 3: Tambahkan Profil Akun Baru
 $btn3 = New-Object System.Windows.Forms.Button
 $btn3.Location = New-Object System.Drawing.Point(15, 185)
 $btn3.Size = New-Object System.Drawing.Size(330, 55)
-$btn3.Text = "[USER] BUAT AKUN ADMINISTRATOR BARU"
+$btn3.Text = "[PROFILE] TAMBAHKAN PROFIL AKUN BARU"
 $btn3.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
 $btn3.ForeColor = [System.Drawing.Color]::White
 $btn3.BackColor = [System.Drawing.Color]::FromArgb(52, 152, 219)
@@ -646,7 +1077,7 @@ $btn3.FlatStyle = 'Flat'
 $btn3.FlatAppearance.BorderSize = 0
 $btn3.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(41, 128, 185)
 $btn3.Cursor = [System.Windows.Forms.Cursors]::Hand
-$btn3.Add_Click({ New-AdminAccount })
+$btn3.Add_Click({ New-UserProfile })
 $buttonPanel.Controls.Add($btn3)
 
 # Button 4: Aktifkan Admin Built-in
@@ -679,26 +1110,56 @@ $btn5.Cursor = [System.Windows.Forms.Cursors]::Hand
 $btn5.Add_Click({ Set-UserPassword })
 $buttonPanel.Controls.Add($btn5)
 
-# Button 6: Refresh Status
+# Button 6: Ubah Status User
 $btn6 = New-Object System.Windows.Forms.Button
 $btn6.Location = New-Object System.Drawing.Point(15, 380)
-$btn6.Size = New-Object System.Drawing.Size(330, 45)
-$btn6.Text = "[REFRESH] REFRESH STATUS"
-$btn6.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
-$btn6.ForeColor = [System.Drawing.Color]::FromArgb(52, 73, 94)
-$btn6.BackColor = [System.Drawing.Color]::FromArgb(236, 240, 241)
+$btn6.Size = New-Object System.Drawing.Size(330, 55)
+$btn6.Text = "[ROLE] UBAH STATUS USER (ADMIN/USER)"
+$btn6.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
+$btn6.ForeColor = [System.Drawing.Color]::White
+$btn6.BackColor = [System.Drawing.Color]::FromArgb(52, 152, 219)
 $btn6.FlatStyle = 'Flat'
-$btn6.FlatAppearance.BorderSize = 1
-$btn6.FlatAppearance.BorderColor = [System.Drawing.Color]::FromArgb(189, 195, 199)
-$btn6.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(189, 195, 199)
+$btn6.FlatAppearance.BorderSize = 0
+$btn6.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(41, 128, 185)
 $btn6.Cursor = [System.Windows.Forms.Cursors]::Hand
-$btn6.Add_Click({ Update-StatusDisplay })
+$btn6.Add_Click({ Set-UserRole })
 $buttonPanel.Controls.Add($btn6)
+
+# Button 7: Delete User
+$btn7 = New-Object System.Windows.Forms.Button
+$btn7.Location = New-Object System.Drawing.Point(15, 445)
+$btn7.Size = New-Object System.Drawing.Size(330, 55)
+$btn7.Text = "[DELETE] HAPUS USER ACCOUNT"
+$btn7.Font = New-Object System.Drawing.Font("Segoe UI", 11, [System.Drawing.FontStyle]::Bold)
+$btn7.ForeColor = [System.Drawing.Color]::White
+$btn7.BackColor = [System.Drawing.Color]::FromArgb(231, 76, 60)
+$btn7.FlatStyle = 'Flat'
+$btn7.FlatAppearance.BorderSize = 0
+$btn7.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(192, 57, 43)
+$btn7.Cursor = [System.Windows.Forms.Cursors]::Hand
+$btn7.Add_Click({ Remove-UserAccount })
+$buttonPanel.Controls.Add($btn7)
+
+# Button 8: Refresh Status
+$btn8 = New-Object System.Windows.Forms.Button
+$btn8.Location = New-Object System.Drawing.Point(15, 510)
+$btn8.Size = New-Object System.Drawing.Size(330, 45)
+$btn8.Text = "[REFRESH] REFRESH STATUS"
+$btn8.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+$btn8.ForeColor = [System.Drawing.Color]::FromArgb(52, 73, 94)
+$btn8.BackColor = [System.Drawing.Color]::FromArgb(236, 240, 241)
+$btn8.FlatStyle = 'Flat'
+$btn8.FlatAppearance.BorderSize = 1
+$btn8.FlatAppearance.BorderColor = [System.Drawing.Color]::FromArgb(189, 195, 199)
+$btn8.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::FromArgb(189, 195, 199)
+$btn8.Cursor = [System.Windows.Forms.Cursors]::Hand
+$btn8.Add_Click({ Update-StatusDisplay })
+$buttonPanel.Controls.Add($btn8)
 
 # Panel Status
 $statusPanel = New-Object System.Windows.Forms.Panel
 $statusPanel.Location = New-Object System.Drawing.Point(400, 95)
-$statusPanel.Size = New-Object System.Drawing.Size(375, 460)
+$statusPanel.Size = New-Object System.Drawing.Size(375, 565)
 $statusPanel.BackColor = [System.Drawing.Color]::White
 $statusPanel.BorderStyle = 'None'
 $mainForm.Controls.Add($statusPanel)
@@ -715,7 +1176,7 @@ $statusPanel.Controls.Add($statusTitleLabel)
 # Status TextBox
 $statusText = New-Object System.Windows.Forms.TextBox
 $statusText.Location = New-Object System.Drawing.Point(15, 55)
-$statusText.Size = New-Object System.Drawing.Size(345, 385)
+$statusText.Size = New-Object System.Drawing.Size(345, 490)
 $statusText.Multiline = $true
 $statusText.ScrollBars = 'Vertical'
 $statusText.ReadOnly = $true
